@@ -1,10 +1,4 @@
 #Python 3.6.1 (Dec 2015) [GCC 4.8.2] on linux
-'''
-	TRABALHO PRÁTICO 01 
-	PESQUISA OPERACIONAL 
-	Mírian Francielle da Silva - 2013048950 
-'''
-
 import ast, sys
 import tableauform
 from dual import dual_pivot
