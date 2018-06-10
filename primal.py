@@ -1,27 +1,19 @@
 import math, sys
-from fractions import Fraction
 from tableauform import change_tableau
-from decimal import getcontext, Decimal
 
 infeasible = 0
 unbounded = 1
 optimal = 2
 
-#precisão das casas decimais na saída do problema
 class prettyfloat(float):
     def __repr__(self):
-        return "%0.2f" % self
+        return "%0.5f" % self
 
-#pra usar em listas de valores que podem ser iteradas
 def map(f, it):
     result = []
     for x in it:
         result.append(f(x))
     return result
-
-
-''' Função para checar o tableau pra saber se a PL é ilimitada, caso seja, retorna um certificado
-'''	
 
 def solution_unbounded(tableau, ratio, columns, index_column):
 	if (ratio == math.inf):
@@ -36,9 +28,9 @@ def solution_unbounded(tableau, ratio, columns, index_column):
 								#print("POSIÇÃO != 0: ",k,j)
 								#print ("TABLEAU [i][index_column]: ", tableau[i][index_column])
 								if tableau[i][index_column] == 0: 
-									cert[j] = round((tableau[i][index_column]),3)
+									cert[j] = round((tableau[i][index_column]),5)
 								elif tableau[i][index_column] > 0 or tableau[i][index_column] < 0: 
-									cert[j] = (-1)*round((tableau[i][index_column]),3)
+									cert[j] = (-1)*round((tableau[i][index_column]),5)
 								#print("INDEX ->> ",cert[j])
 							cert[index_column] = 1 
 					elif tableau[i][index_column] > 0 or tableau[i][index_column] < 0:
@@ -62,10 +54,8 @@ def primal_pivot(tableau, _aux, lines, columns, index_column):
 				ratio = curr
 				index_line = i
 
-	#output_2 = 
 	solution_unbounded(tableau, ratio, columns, index_column)
-	#if solution_unbounded(tableau, ratio, columns, index_column): 
-	
+
 	denominator = tableau[index_line][index_column]
 	#divide a linha pelo valor temporario de um divisor calculado acima
 	for i in range(0, len(tableau[0])):
