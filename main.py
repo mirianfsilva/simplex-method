@@ -1,8 +1,7 @@
 #Python 3.6.1 (Dec 2015) [GCC 4.8.2] on linux
 '''	PESQUISA OPERACIONAL 
-	Mírian Francielle da Silva 
+	Mírian Francielle da Silva
 '''
-
 import ast, sys
 import tableauform
 from dual import dual_pivot
@@ -20,12 +19,8 @@ def map(f, it):
     return result
 
 def print_tableau(tableau):
-	
 	for i in range(0, len(tableau)):
-		tableau[i] = map(prettyfloat,tableau[i])
-		#print(tableau[i])
-	#print('\n')
-			
+		tableau[i] = map(prettyfloat,tableau[i])			
 	with open("pivotamento.txt", "w") as file_1:
 		for i in range(0, len(tableau)):
 			file_1.write('[')
@@ -51,28 +46,21 @@ sendo assim apresentar um certificado.
 
 def solution(tableau, lines, columns):
 	var_solution = [0 for _ in range(0,columns)]
-	#print (len(tableau),columns)
 	for i in range(1, len(tableau)):
 		for j in range(0, columns):
 			if(tableau[i][j] == 1):
-				#print ('POSIÇÃO IGUAL A 1 verificar',i,j)
 				for k in range(0, len(tableau)):
 					if tableau[k][j] == 0:
-						#print ('basica na posição', j, tableau[i][-1])
 						var_solution[j] = round(tableau[i][-1],3)
-						#print (var_solution)
 						break
 	return (var_solution)
 
 def matrix_ope(matrix, lines, columns):
-	#matriz de operacoes com posições vazias
 	_aux = [[] for i in range(len(matrix))]
 	for i in range(0, lines):
-		#zeros no vetor c
 		_aux[0].append(0)
 	for i in range(1, len(matrix)):
 		for j in range(1, len(matrix)):
-			#criação da matriz identidade
 			if j == i:
 				_aux[i].append(1)
 			else:
@@ -86,28 +74,22 @@ linhas e colunas como parametro como especificado da descrição do trabalho.
 '''
 def simplex(matrix, lines, columns):
 	
-	#coloca a matriz em FPI para começar as operações
 	tableauform.standard_form(matrix, lines)
 	tableau = matrix
 
-	#matriz de operações
 	aux = matrix_ope(tableau, lines, columns)
 
-	#mudança dos valores da função objetiva no tableau
 	for i in range(0, columns):
 		tableau[0][i] = tableau[0][i] * (-1)
-
 	temp = 0
 	print_tableau(tableau)
 	while (temp == 0):
-		#checa vetor b do tableau, se possuir entradas negativas aplica o dual
 		for i in range(1, len(tableau)):
 			if (tableau[i][-1] < 0):
 				dual_pivot(tableau, aux, lines, i)
 				break
 
-        #checa vetor c do tableau, se possuir entradas negativas aplica o primal
-		for i in range(0, (len(tableau[0]) - 1)):
+        	for i in range(0, (len(tableau[0]) - 1)):
 			if (tableau[0][i] < 0):
 				primal_pivot(tableau, aux, lines, columns, i)
 				break
@@ -115,8 +97,6 @@ def simplex(matrix, lines, columns):
 		print_tableau(tableau)
 		temp = tableauform.check_optimal(tableau)
 	
-	#print_tableau(tableau)
-	#se tem solução ótima, retorna o vetor das variáveis
 	var_solution = solution(tableau, lines, columns)
 	cert = map(prettyfloat, aux[0])
 	v_obj = round(tableau[0][-1],3)
@@ -124,9 +104,6 @@ def simplex(matrix, lines, columns):
 	
 	with open("conclusão.txt","w") as file_2:
 		file_2.write('\n'.join(map(str, output_2)))
-	
-	#print('\n'.join(map(str, output_2)))
-	#print('', optimal,'\n',var_solution,'\n', v_obj,'\n', cert)
 
 def print_output1(arg):
 	with open("pivotamento.txt","w") as output_1:
@@ -138,13 +115,8 @@ with open("input.txt", "r") as csvfile:
 		count += 1
 		if count == 1:
 			lines = ast.literal_eval(l.strip())
-			#lines = np.array(eval())
 		elif count == 2:
 			columns = ast.literal_eval(l.strip())
-			#columns = np.array(eval())
 		elif count == 3:
 			matrix = ast.literal_eval(l.strip())
-			#matrix = np.array(eval())
-#print (lines, columns, matrix)
-
 simplex(matrix, lines, columns)
