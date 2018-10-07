@@ -55,8 +55,8 @@ def solution_unbounded(tableau, ratio, columns, index_column):
 					break
 		output_2 = [unbounded,cert]
 		print(output_2)
-		#with open("conclusão.txt","w") as file_2:
-		#	file_2.write('\n'.join(map(str, output_2)))
+		with open("output.txt","w") as file_2:
+			file_2.write('\n'.join(map(str, output_2)))
 
 
 def solution_infeasible(tableau, _aux):
@@ -67,8 +67,10 @@ def solution_infeasible(tableau, _aux):
 			if (j == len(tableau[0]) - 1):
 				if (tableau[i][j] < 0):
 					out_aux = map(prettyfloat, _aux[i])
-					return(infeasible, out_aux)
-					#sys.exit()
+	output_1 = [infeasible,out_aux]
+	print(output_1)
+	with open("out.txt","w") as file_1:
+		file_1.write('\n'.join(map(str, output_1)))
 
 
 #PIVOTEAMENTOS
