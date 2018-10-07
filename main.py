@@ -1,12 +1,10 @@
 #Python 3.6.1 (Dec 2015) [GCC 4.8.2] on linux
 '''	PESQUISA OPERACIONAL 
-	Mírian Francielle da Silva
+	Mírian Francielle da Silva 
 '''
-import ast, sys
-import tableauform
-from dual import dual_pivot
-from primal import primal_pivot
-import numpy as np
+import ast, sys, sympy 
+from tableaux import solution, solution_infeasible, solution_unbounded
+from tableaux import primal_pivot, dual_pivot, matrix_ope, change_tableau
 
 class prettyfloat(float):
     def __repr__(self):
@@ -18,105 +16,124 @@ def map(f, it):
         result.append(f(x))
     return result
 
+infeasible = 'Status: inviavel'
+unbounded = 'Status: ilimitado'
+optimal = 'Status: otimo'
+linerules = 4 #linha que inicia as restrições
+
+def check_optimal(tableau):
+	#column_b = -1  #posição do vetor b no tableau
+	#checa se o tableau final realmente tem c > 0
+	for x in range(0, len(tableau[0]) - 1):
+		if (tableau[0][x] < 0):
+			return False
+
+	#checa se o tableau final realmente tem b > 0
+	for x in range(1, len(tableau)):
+		if (tableau[x][-1] < 0):
+			return False
+	return True
+
 def print_tableau(tableau):
 	for i in range(0, len(tableau)):
-		tableau[i] = map(prettyfloat,tableau[i])			
-	with open("pivotamento.txt", "w") as file_1:
-		for i in range(0, len(tableau)):
-			file_1.write('[')
-			file_1.write(', '.join(map(str,tableau[i])))
-			file_1.write(']')
-			file_1.write('\n')
-	
-''' A saída deve conter a seguinte informação: 
-Dizer se o problema é inviável (INFEASIBLE) com output = 0; 
-ou dizer que o problema é viável mas possui solução ilimitada (FEASIBLE & UNBOUNDED) com output = 1; 
-ou se o problema é viável e limitado, sendo assim possui solução ótima, (FEASIBLE & BOUNDED) com output = 2, 
-e a solução ótima contendo os valores das variáveis {x1,..., xn}; isto é, valores das variáveis e valor 
-objetivo da solução ótima. 
-'''
-infeasible = 0
-unbounded = 1
-optimal = 2
+		#tableau[i] = map(prettyfloat,tableau[i])
+		print(tableau[i])
+	print('\n')
 
-''' Sempre que a entrada do programa é inviável ou a solução é ilimitada,
-a saída do modo detalhado deve dar alguma evidência para essa conclusão, 
-sendo assim apresentar um certificado.
-'''
-
-def solution(tableau, lines, columns):
-	var_solution = [0 for _ in range(0,columns)]
-	for i in range(1, len(tableau)):
-		for j in range(0, columns):
-			if(tableau[i][j] == 1):
-				for k in range(0, len(tableau)):
-					if tableau[k][j] == 0:
-						var_solution[j] = round(tableau[i][-1],3)
-						break
-	return (var_solution)
-
-def matrix_ope(matrix, lines, columns):
-	_aux = [[] for i in range(len(matrix))]
-	for i in range(0, lines):
-		_aux[0].append(0)
-	for i in range(1, len(matrix)):
-		for j in range(1, len(matrix)):
-			if j == i:
-				_aux[i].append(1)
-			else:
-				_aux[i].append(0)
-	return _aux
-
-''' Procedimento que realiza o simplex na matriz já em FPI. 
-A função verifica se é possível realizar o dual primeiro na matriz, 
-caso contrário, faz o procedimento de pivotamento primal, e recebe a matriz, 
-linhas e colunas como parametro como especificado da descrição do trabalho.
-'''
-def simplex(matrix, lines, columns):
-	
-	tableauform.standard_form(matrix, lines)
-	tableau = matrix
-
-	aux = matrix_ope(tableau, lines, columns)
-
-	for i in range(0, columns):
-		tableau[0][i] = tableau[0][i] * (-1)
-	temp = 0
-	print_tableau(tableau)
-	while (temp == 0):
-		for i in range(1, len(tableau)):
-			if (tableau[i][-1] < 0):
-				dual_pivot(tableau, aux, lines, i)
-				break
-
-        	for i in range(0, (len(tableau[0]) - 1)):
-			if (tableau[0][i] < 0):
-				primal_pivot(tableau, aux, lines, columns, i)
-				break
-			
-		print_tableau(tableau)
-		temp = tableauform.check_optimal(tableau)
-	
-	var_solution = solution(tableau, lines, columns)
-	cert = map(prettyfloat, aux[0])
-	v_obj = round(tableau[0][-1],3)
-	output_2 = [optimal,var_solution,v_obj,cert]
-	
-	with open("conclusão.txt","w") as file_2:
-		file_2.write('\n'.join(map(str, output_2)))
-
-def print_output1(arg):
-	with open("pivotamento.txt","w") as output_1:
-		output_1.write(arg)
-	
 with open("input.txt", "r") as csvfile:
-	count = 0
-	for l in csvfile:
-		count += 1
-		if count == 1:
-			lines = ast.literal_eval(l.strip())
-		elif count == 2:
-			columns = ast.literal_eval(l.strip())
-		elif count == 3:
-			matrix = ast.literal_eval(l.strip())
-simplex(matrix, lines, columns)
+    arq = csvfile.readlines()
+
+columns = int(arq[0])
+lines = int(arq[1])
+
+var_conditions_temp = arq[2].split()
+var_conditions = [float(i) for i in var_conditions_temp] 
+
+objective_temp = arq[3].split()
+objective = [float(i) for i in objective_temp]
+objective.append(0) #valor obj
+
+print ('COLUMS:', columns, 'LINES:', lines)
+print('VAR CONDITIONS:', var_conditions)
+print('OBJECTIVE:', objective)
+
+matrix_temp = []
+for i in range(linerules, linerules + lines):
+    lines_temp = arq[i].split()
+    matrix_temp.append(lines_temp)
+
+#Standard Form
+#greater than equal and less than equal equations 
+#Add slack variables to matrix 
+# to transform all inequalities to equalities.
+"""
+TO-DO: TODA VARIÁVEL LIVRE DEVE SE TORNAR DUAS VARIÁVEIS NÃO NEGATIVAS
+"""
+
+matrix_id = []
+for x in range(0, lines):
+    temp = []
+    for y in range(0, lines):
+        #add 1 on diagonals
+        if (x == y):
+            #check inequalities 
+            if (matrix_temp[x][columns] == '>='):
+                temp.append(-1)
+            elif(matrix_temp[x][columns] == '<='):
+                temp.append(1)
+            #geq.append(x)
+        else:
+            temp.append(0)
+    matrix_id.append(temp)
+        
+matrix = [] 
+vc = [] #vector objetive c for tableau
+for i in objective:
+    vc.append(i)
+for i in range(0, len(matrix_id)):
+    vc.append(0)
+matrix.append(vc)
+
+#mudança dos valores da função objetiva no tableau
+for i in range(0, columns):
+	matrix[0][i] = matrix[0][i] * (-1)
+
+for x in range(0,lines):
+    temp = []
+    for y in range(0, columns):
+        temp.append(float(matrix_temp[x][y]))
+
+    for k in range(0, len(matrix_id)):
+        temp.append(matrix_id[k][x])
+    temp.append(float(matrix_temp[x][-1])) #vector b
+    matrix.append(temp)
+
+print_tableau(matrix)
+
+#matrix = sympy.Matrix(matrix)
+#reduced_form = matrix.rref()
+#check linear independence in tableau 
+temp = 0
+auxtableau = matrix_ope(matrix, lines, columns)
+tableau = matrix
+
+while (temp == 0):
+	#checa vetor b do tableau, se possuir entradas negativas aplica o dual
+	for i in range(1, len(tableau)):
+		if (tableau[i][-1] < 0):
+			dual_pivot(tableau, auxtableau, lines, i)
+			break
+    #checa vetor c do tableau, se possuir entradas negativas aplica o primal
+	for i in range(0, (len(tableau[0]) - 1)):
+		if (tableau[0][i] < 0):
+			primal_pivot(tableau, auxtableau, lines, columns, i)
+			break
+	temp = check_optimal(tableau)
+
+	var_solution = solution(tableau, lines, columns)
+	cert = map(prettyfloat, auxtableau[0])
+	v_obj = round(tableau[0][-1],3)
+	output = [optimal,var_solution,v_obj,cert]
+	
+	with open("output.txt","w") as file:
+		file.write('\n'.join(map(str, output)))
