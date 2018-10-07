@@ -34,12 +34,10 @@ def dual_pivot(tableau, _aux, lines, index_line):
 	for i in range(0, len(tableau[0])):
 		if (tableau[index_line][i] != 0):
 			curr = (tableau[0][i] / (tableau[index_line][i]) * (-1))
-			#print (tableau[0][i], tableau[index_line][i]*(-1), curr)
 			if (curr < ratio and curr > 0):
 				ratio = curr
 				index_column = i
 	
-	#retorna um certificado resultado das operações da matriz de operações
 	solution_infeasible(tableau, _aux)
     
 	denominator = tableau[index_line][index_column]
