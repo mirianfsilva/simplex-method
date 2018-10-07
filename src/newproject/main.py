@@ -2,9 +2,9 @@
 '''	PESQUISA OPERACIONAL 
 	Mírian Francielle da Silva 
 '''
-
-import ast, sys
-from tableaux import solution, solution_infeasible, solution_unbounded, primal_pivot, dual_pivot, matrix_ope, change_tableau
+import ast, sys, sympy 
+from tableaux import solution, solution_infeasible, solution_unbounded
+from tableaux import primal_pivot, dual_pivot, matrix_ope, change_tableau
 
 class prettyfloat(float):
     def __repr__(self):
@@ -62,10 +62,14 @@ for i in range(linerules, linerules + lines):
     lines_temp = arq[i].split()
     matrix_temp.append(lines_temp)
 
-    #Standard Form
-    #greater than equal and less than equal equations 
-    #Add slack variables to matrix 
-    # to transform all inequalities to equalities.
+#Standard Form
+#greater than equal and less than equal equations 
+#Add slack variables to matrix 
+# to transform all inequalities to equalities.
+"""
+TO-DO: TODA VARIÁVEL LIVRE DEVE SE TORNAR DUAS VARIÁVEIS NÃO NEGATIVAS
+"""
+
 matrix_id = []
 for x in range(0, lines):
     temp = []
@@ -83,12 +87,16 @@ for x in range(0, lines):
     matrix_id.append(temp)
         
 matrix = [] 
-vc = [] #vector objetive for tableau
+vc = [] #vector objetive c for tableau
 for i in objective:
     vc.append(i)
 for i in range(0, len(matrix_id)):
     vc.append(0)
 matrix.append(vc)
+
+#mudança dos valores da função objetiva no tableau
+for i in range(0, columns):
+	matrix[0][i] = matrix[0][i] * (-1)
 
 for x in range(0,lines):
     temp = []
@@ -102,3 +110,22 @@ for x in range(0,lines):
 
 print_tableau(matrix)
 
+#matrix = sympy.Matrix(matrix)
+#reduced_form = matrix.rref()
+#check linear independence in tableau 
+temp = 0
+auxtableau = matrix_ope(matrix, lines, columns)
+tableau = matrix
+while (temp == 0):
+	#checa vetor b do tableau, se possuir entradas negativas aplica o dual
+	for i in range(1, len(tableau)):
+		if (tableau[i][-1] < 0):
+			dual_pivot(tableau, auxtableau, lines, i)
+			break
+    #checa vetor c do tableau, se possuir entradas negativas aplica o primal
+	for i in range(0, (len(tableau[0]) - 1)):
+		if (tableau[0][i] < 0):
+			primal_pivot(tableau, auxtableau, lines, columns, i)
+			break
+	
+	temp = check_optimal(tableau)
