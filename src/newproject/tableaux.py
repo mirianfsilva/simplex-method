@@ -1,4 +1,19 @@
-import ast, sys
+import ast, sys, math
+
+class prettyfloat(float):
+    def __repr__(self):
+        return "%0.2f" % self
+
+def map(f, it):
+    result = []
+    for x in it:
+        result.append(f(x))
+    return result
+
+infeasible = 'Status: inviavel'
+unbounded = 'Status: ilimitado'
+optimal = 'Status: otimo'
+linerules = 4 #linha que inicia as restrições
 
 #SOLUTIONS
 
@@ -42,7 +57,7 @@ def solution_unbounded(tableau, ratio, columns, index_column):
 		print(output_2)
 		#with open("conclusão.txt","w") as file_2:
 		#	file_2.write('\n'.join(map(str, output_2)))
-		sys.exit()
+
 
 def solution_infeasible(tableau, _aux):
 	for i in range(1, len(tableau)):
@@ -57,7 +72,6 @@ def solution_infeasible(tableau, _aux):
 
 
 #PIVOTEAMENTOS
-
 #Função de pivotamento primal, caso b > 0 e tenha valores < 0 em c, 
 #que nesse caso é a primeira linha do tableau[0]
 
