@@ -19,7 +19,6 @@ def standard_form(matrix, lines):
 		b.append(matrix[x].pop())
 	for x in range(1, len(matrix)):
 		for y in range(1, len(matrix)):
-			#add 1 on diagonals
 			if x == y:
 				matrix[x].append(1)
 			else:
@@ -31,12 +30,10 @@ def standard_form(matrix, lines):
 
 def check_optimal(tableau):
 	column_b = -1  #posição do vetor b no tableau
-	#checa se o tableau final realmente tem c > 0
 	for x in range(0, len(tableau[0]) - 1):
 		if (tableau[0][x] < 0):
 			return False
 
-	#checa se o tableau final realmente tem b > 0
 	for x in range(1, len(tableau)):
 		if (tableau[x][-1] < 0):
 			return False
@@ -50,4 +47,3 @@ def change_tableau(tableau, _aux, index_line, index_column):
                 tableau[i][j] -= temp*tableau[index_line][j]
             for j in range(0, len(tableau)-1):
                 _aux[i][j] -= temp * _aux[index_line][j]
-
