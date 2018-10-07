@@ -17,21 +17,16 @@ def map(f, it):
 
 def solution_unbounded(tableau, ratio, columns, index_column):
 	if (ratio == math.inf):
-		cert = [0 for _ in range(0, len(tableau[0])-1)] #vetor para o certificado
+		cert = [0 for _ in range(0, len(tableau[0])-1)]
 		for i in range(1, len(tableau)):
 				for j in range(0, len(tableau[0])-1):
-					#print ('tableau[',i,'][',j,']',tableau[i][j])
 					if tableau[i][j] == 1:
-						#print("linha: ",i,"coluna: ",j)
 						for k in range(0, len(tableau)):
 							if tableau[k][j] != 0:
-								#print("POSIÇÃO != 0: ",k,j)
-								#print ("TABLEAU [i][index_column]: ", tableau[i][index_column])
 								if tableau[i][index_column] == 0: 
 									cert[j] = round((tableau[i][index_column]),5)
 								elif tableau[i][index_column] > 0 or tableau[i][index_column] < 0: 
 									cert[j] = (-1)*round((tableau[i][index_column]),5)
-								#print("INDEX ->> ",cert[j])
 							cert[index_column] = 1 
 					elif tableau[i][index_column] > 0 or tableau[i][index_column] < 0:
 						continue
@@ -46,7 +41,6 @@ def solution_unbounded(tableau, ratio, columns, index_column):
 def primal_pivot(tableau, _aux, lines, columns, index_column):
 	ratio = math.inf
 	index_line = math.inf
-	#escolhe a linha baseado na menor razao positiva
 	for i in range(1, len(tableau)):
 		if (tableau[i][index_column] != 0):
 			curr = tableau[i][-1] / tableau[i][index_column]
