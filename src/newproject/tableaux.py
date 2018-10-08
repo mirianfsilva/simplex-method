@@ -16,14 +16,11 @@ optimal = 'Status: otimo'
 linerules = 4 #linha que inicia as restrições
 
 #SOLUTIONS
-
 def solution(tableau, lines, columns):
 	var_solution = [0 for _ in range(0,columns)]
-	#print (len(tableau),columns)
 	for i in range(1, len(tableau)):
 		for j in range(0, columns):
 			if(tableau[i][j] == 1):
-				#print ('POSIÇÃO IGUAL A 1 verificar',i,j)
 				for k in range(0, len(tableau)):
 					if tableau[k][j] == 0:
 						#print ('basica na posição', j, tableau[i][-1])
@@ -34,21 +31,16 @@ def solution(tableau, lines, columns):
 
 def solution_unbounded(tableau, ratio, columns, index_column):
 	if (ratio == math.inf):
-		cert = [0 for _ in range(0, len(tableau[0])-1)] #vetor para o certificado
+		cert = [0 for _ in range(0, len(tableau[0])-1)] 
 		for i in range(1, len(tableau)):
 				for j in range(0, len(tableau[0])-1):
-					#print ('tableau[',i,'][',j,']',tableau[i][j])
 					if tableau[i][j] == 1:
-						#print("linha: ",i,"coluna: ",j)
 						for k in range(0, len(tableau)):
 							if tableau[k][j] != 0:
-								#print("POSIÇÃO != 0: ",k,j)
-								#print ("TABLEAU [i][index_column]: ", tableau[i][index_column])
 								if tableau[i][index_column] == 0: 
 									cert[j] = round((tableau[i][index_column]),5)
 								elif tableau[i][index_column] > 0 or tableau[i][index_column] < 0: 
 									cert[j] = (-1)*round((tableau[i][index_column]),5)
-								#print("INDEX ->> ",cert[j])
 							cert[index_column] = 1 
 					elif tableau[i][index_column] > 0 or tableau[i][index_column] < 0:
 						continue
@@ -72,15 +64,11 @@ def solution_infeasible(tableau, _aux):
 	with open("out.txt","w") as file_1:
 		file_1.write('\n'.join(map(str, output_1)))
 
-
-#PIVOTEAMENTOS
-#Função de pivotamento primal, caso b > 0 e tenha valores < 0 em c, 
-#que nesse caso é a primeira linha do tableau[0]
-
+#PIVOTS
 def primal_pivot(tableau, _aux, lines, columns, index_column):
 	ratio = math.inf
 	index_line = math.inf
-	#escolhe a linha baseado na menor razao positiva
+	#lower ratio
 	for i in range(1, len(tableau)):
 		if (tableau[i][index_column] != 0):
 			curr = tableau[i][-1] / tableau[i][index_column]
@@ -91,7 +79,7 @@ def primal_pivot(tableau, _aux, lines, columns, index_column):
 	solution_unbounded(tableau, ratio, columns, index_column)
 
 	denominator = tableau[index_line][index_column]
-	#divide a linha pelo valor temporario de um divisor calculado acima
+	#divides the line by the temporary value of a divisor calculated above
 	for i in range(0, len(tableau[0])):
 		tableau[index_line][i] /= denominator
 	for i in range(0, lines):
@@ -103,7 +91,7 @@ def dual_pivot(tableau, _aux, lines, index_line):
 	ratio = math.inf
 	index_column = math.inf
 
-	#menor razão positiva da coluna
+	#lower column ratio
 	for i in range(0, len(tableau[0])):
 		if (tableau[index_line][i] != 0):
 			curr = (tableau[0][i] / (tableau[index_line][i]) * (-1))
@@ -112,7 +100,6 @@ def dual_pivot(tableau, _aux, lines, index_line):
 				ratio = curr
 				index_column = i
 	
-	#retorna um certificado resultado das operações da matriz de operações
 	solution_infeasible(tableau, _aux)
     
 	denominator = tableau[index_line][index_column]
@@ -123,16 +110,15 @@ def dual_pivot(tableau, _aux, lines, index_line):
 	change_tableau(tableau, _aux, index_line, index_column)
 
 #OPERATIONS
-
 def matrix_ope(matrix, lines, columns):
-	#matriz de operacoes com posições vazias
+	#matrix operations empty 
 	_aux = [[] for i in range(len(matrix))]
 	for i in range(0, lines):
-		#zeros no vetor c
+		#zeros in c
 		_aux[0].append(0)
 	for i in range(1, len(matrix)):
 		for j in range(1, len(matrix)):
-			#criação da matriz identidade
+			#matrix id 
 			if j == i:
 				_aux[i].append(1)
 			else:
