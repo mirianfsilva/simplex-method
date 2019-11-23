@@ -2,7 +2,7 @@
 '''	PESQUISA OPERACIONAL 
 	Mírian Francielle da Silva 
 '''
-import ast, sys, sympy 
+import ast, sys
 from tableaux import solution, solution_infeasible, solution_unbounded
 from tableaux import primal_pivot, dual_pivot, matrix_ope, change_tableau
 
