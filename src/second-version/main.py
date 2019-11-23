@@ -2,7 +2,7 @@
 '''	PESQUISA OPERACIONAL 
 	Mírian Francielle da Silva 
 '''
-import ast, sys, sympy 
+import ast, sys
 from tableaux import solution, solution_infeasible, solution_unbounded
 from tableaux import primal_pivot, dual_pivot, matrix_ope, change_tableau
 
@@ -116,7 +116,6 @@ print_tableau(matrix)
 temp = 0
 auxtableau = matrix_ope(matrix, lines, columns)
 tableau = matrix
-
 while (temp == 0):
 	#checa vetor b do tableau, se possuir entradas negativas aplica o dual
 	for i in range(1, len(tableau)):
@@ -128,12 +127,5 @@ while (temp == 0):
 		if (tableau[0][i] < 0):
 			primal_pivot(tableau, auxtableau, lines, columns, i)
 			break
-	temp = check_optimal(tableau)
-
-	var_solution = solution(tableau, lines, columns)
-	cert = map(prettyfloat, auxtableau[0])
-	v_obj = round(tableau[0][-1],3)
-	output = [optimal,var_solution,v_obj,cert]
 	
-	with open("output.txt","w") as file:
-		file.write('\n'.join(map(str, output)))
+	temp = check_optimal(tableau)
